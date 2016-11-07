@@ -6,6 +6,15 @@ public class TatamiObject : MonoBehaviour {
     
     int color = 0;
 
+    public int x{ get; private set; }
+
+    public int y{ get; private set; }
+
+    public int w{ get; private set; }
+
+    public int h{ get; private set; }
+
+
     public int Color {
         get{ return color; }
         set{ ChangeColor(value); }
@@ -52,6 +61,10 @@ public class TatamiObject : MonoBehaviour {
         transform.SetParent(parent);
         transform.position = new Vector3(x + w / 2f - 0.5f, 0, -1f * (y + h / 2f - 0.5f));
         transform.localScale = new Vector3(w, 0.3f, h) * 0.98f;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
         ChangeColor(c);
     }
 

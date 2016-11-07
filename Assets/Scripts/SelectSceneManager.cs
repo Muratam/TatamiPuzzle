@@ -2,13 +2,16 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class SelectSceneManager : MonoBehaviour {
     [SerializeField] RectTransform rtStageSelectOriginal;
     [SerializeField] ReadingText StageNameText;
     [SerializeField] Text ExplanationText;
+    [SerializeField] Fade fade;
     int delegateDelta = 0;
     int preMouseReacted = 0;
+    bool goingToScene = false;
 
     void Start() {
         MakeUI();  
@@ -36,15 +39,26 @@ public class SelectSceneManager : MonoBehaviour {
     void UpdateExplanations() {
         var index = PlayingData.StageIndex;
         var stageData = PlayingData.StageDatas[index];
-        StageNameText.text = TatamiUtil.Int2Japanese(index) + " " + stageData.Name;   
-        ExplanationText.text = stageData.Explanation;
+        var clearTime = PlayingData.GetClearTime(PlayingData.StageIndex);
+        var clearTimeText = clearTime == 0 ? "未達成" : "最高記録 " + TatamiUtil.Int2Japanese(clearTime) + "回";
+        StageNameText.text = TatamiUtil.Int2Japanese(index) + " " + stageData.Name;    
+        ExplanationText.text = clearTimeText + "\n" + stageData.Explanation;
     }
 
     public void SetDelegateDelta(int delta) {
         delegateDelta = delta;
     }
 
-    void Update() {
+    public void GotoProblemScene() {
+        if(goingToScene)
+            return;
+        goingToScene = true;
+        fade.StartFade(true, () => {
+            SceneManager.LoadScene("Main");   
+        }, 0.3f);
+    }
+
+    void StageSelectByUserCommand() {
         int delta = delegateDelta;
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow))
             delta = -1;
@@ -65,5 +79,18 @@ public class SelectSceneManager : MonoBehaviour {
             Vibration.VibrateAll();
         }
         delegateDelta = 0;
+
+    }
+
+    void Update() {
+        if(goingToScene || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Z)) {
+            GotoProblemScene();
+            return;
+        }
+        if(Input.GetKeyDown(KeyCode.I) && Input.GetKey(KeyCode.LeftShift)) {
+            PlayingData.DeleteClearTimeAll();
+            Debug.Log("DELETE CLEAR TIME");
+        }
+        StageSelectByUserCommand();
     }
 }

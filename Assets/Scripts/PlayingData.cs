@@ -32,23 +32,52 @@ public static class PlayingData {
         }
     }
 
+    public static int GetClearTime(int index) {
+        return PlayerPrefs.GetInt("tatami" + index, 0);
+    }
+
+    public static void UpdateClearTime(int index, int time) {
+        var preTime = GetClearTime(index);
+        if(preTime != 0) {
+            time = Mathf.Min(time, preTime);
+        }
+        PlayerPrefs.SetInt("tatami" + index, time);
+        PlayerPrefs.Save();
+    }
+
+    public static void DeleteClearTimeAll() {
+        PlayerPrefs.DeleteAll();
+    }
+
     public readonly static List<StageData> StageDatas = new List<StageData>();
 
-    static PlayingData() {
+
+    static PlayingData() {        
+        Action<string> ConstructDatas = (text) => {
+            var lines = text.Split('\n');
+            var data = lines.TakeWhile(_ => !_.StartsWith("#")).Aggregate((a, b) => a + "\n" + b);
+            var name = lines.SkipWhile(_ => !_.StartsWith("#")).ElementAt(1);
+            var explanation = lines.SkipWhile(_ => !_.StartsWith("#")).Skip(2).Aggregate((a, b) => a + "\n" + b);
+            StageDatas.Add(new StageData(name, explanation, data));
+        };
         var folder = "./TatamiStageData/";
         var extention = "txt";
-        var files = Directory.GetFiles(folder)
-            .Where(_ => new Regex(folder + @"\d+\." + extention).Match(_).Success).ToArray();
         Func<string,int> filename2Index = 
             (_) => int.Parse(_.Replace(folder, "").Replace("." + extention, ""));
-        Array.Sort(files, (a, b) => filename2Index(a) - filename2Index(b));
-        foreach(var f in files) {
-            using(var sr = new StreamReader(f)) {
-                var lines = sr.ReadToEnd().Split('\n');
-                var data = lines.TakeWhile(_ => !_.StartsWith("#")).Aggregate((a, b) => a + "\n" + b);
-                var name = lines.SkipWhile(_ => !_.StartsWith("#")).ElementAt(1);
-                var explanation = lines.SkipWhile(_ => !_.StartsWith("#")).Skip(2).Aggregate((a, b) => a + "\n" + b);
-                StageDatas.Add(new StageData(name, explanation, data));
+        if(Directory.Exists(folder)) { // try to read from folder            
+            var files = Directory.GetFiles(folder).Where(_ => new Regex(folder + @"\d+\." + extention + "$").Match(_).Success).ToArray();
+            Array.Sort(files, (a, b) => filename2Index(a) - filename2Index(b));
+            foreach(var f in files) {
+                using(var sr = new StreamReader(f)) {
+                    ConstructDatas(sr.ReadToEnd());
+                }
+            }
+        } else { // try to read from Resources (For Android etc..)  
+            var textObjects = Resources.LoadAll(folder);
+            Array.Sort(textObjects, (a, b) => filename2Index(a.name) - filename2Index(b.name));
+            foreach(var to in textObjects) {
+                var ta = to as TextAsset;
+                ConstructDatas(ta.text);
             }
         }
     }

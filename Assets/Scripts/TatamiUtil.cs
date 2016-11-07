@@ -17,9 +17,9 @@ public static class TatamiUtil {
         if(i < 100)
             return (i < 20 ? "" : Int2Japanese(i / 10, false)) + "十" + Int2Japanese(i % 10, false);
         if(i < 1000)
-            return (i < 200 ? "" : Int2Japanese(i / 10, false)) + "百" + Int2Japanese(i % 100, false);
+            return (i < 200 ? "" : Int2Japanese(i / 100, false)) + "百" + Int2Japanese(i % 100, false);
         if(i < 10000)
-            return (i < 2000 ? "" : Int2Japanese(i / 10, false)) + "千" + Int2Japanese(i % 1000, false);
+            return (i < 2000 ? "" : Int2Japanese(i / 1000, false)) + "千" + Int2Japanese(i % 1000, false);
         return "すごく多い";
     }
 
