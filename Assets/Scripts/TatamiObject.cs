@@ -57,9 +57,13 @@ public class TatamiObject : MonoBehaviour {
         }
     }
 
+    public static void PlaceObject(GameObject go, Transform parent, int x, int y, int w, int h) {
+        go.transform.SetParent(parent);
+        go.transform.position = new Vector3(x + w / 2f - 0.5f, 0, -1f * (y + h / 2f - 0.5f));    
+    }
+
     public void Place(Transform parent, int x, int y, int w, int h, int c) {
-        transform.SetParent(parent);
-        transform.position = new Vector3(x + w / 2f - 0.5f, 0, -1f * (y + h / 2f - 0.5f));
+        PlaceObject(this.gameObject, parent, x, y, w, h);
         transform.localScale = new Vector3(w, 0.3f, h) * 0.98f;
         this.x = x;
         this.y = y;

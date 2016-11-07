@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public static class TatamiUtil {
     static string[] kansuuji = new string[] {
@@ -23,6 +24,7 @@ public static class TatamiUtil {
         return "すごく多い";
     }
 
+    [ObsoleteAttribute("Use ReadCharaType")]
     public static List<List<int>> ReadRectType(string text) {
         var varslist = text.Trim().Split('\n')
             .Select(line => line.Split(' ').Select(_ => int.Parse(_)).ToList()).ToList();
@@ -67,9 +69,8 @@ public static class TatamiUtil {
                         searched[x + dx, y + dy] = true;
                     }
                 }
-                if(c == 'x')
-                    continue;
-                c -= '0';
+                if(c != 'x')
+                    c -= '0';
                 varslist.Add(new List<int>(){ x, y, w, h, c });
             }
         }

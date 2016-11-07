@@ -32,6 +32,7 @@ using UnityEngine.SceneManagement;
 public class TatamiManager : MonoBehaviour {
     
     [SerializeField] TatamiObject tatamiOriginal;
+    [SerializeField] GameObject goObstacle;
     [SerializeField] Player player;
     [SerializeField] Camera mainCamera;
     [SerializeField] Text moveText;
@@ -164,20 +165,26 @@ public class TatamiManager : MonoBehaviour {
         int min_x = 0, min_y = 0;
         var max_x = varslist.Select(_ => _[0] + _[2]).Max();
         var max_y = varslist.Select(_ => _[1] + _[3]).Max();
-        this.maxColor = varslist.Select(_ => _[4]).Max();
+        this.maxColor = varslist.Select(_ => _[4]).Where(_ => _ != 'x').Max();
         Init();
         tatamiGridInfo = new TatamiObject[max_x - min_x, max_y - min_y];
         tatamiObjects = new List<TatamiObject>();
         foreach(var vars in varslist) {
             int x = vars[0], y = vars[1], w = vars[2], h = vars[3], c = vars[4];
-            var tatamiClone = Instantiate(tatamiOriginal) as TatamiObject;
-            tatamiObjects.Add(tatamiClone);
-            tatamiClone.Place(this.transform, x, y, w, h, c);
-            foreach(var xi in Enumerable.Range(x,w)) {
-                foreach(var yi in Enumerable.Range(y,h)) {
-                    Debug.Assert(tatamiGridInfo[xi, yi] == null);
-                    tatamiGridInfo[xi, yi] = tatamiClone;
+            if(c != 'x') {
+                var tatamiClone = Instantiate(tatamiOriginal) as TatamiObject;
+                tatamiObjects.Add(tatamiClone);
+                tatamiClone.Place(this.transform, x, y, w, h, c);
+                foreach(var xi in Enumerable.Range(x,w)) {
+                    foreach(var yi in Enumerable.Range(y,h)) {
+                        Debug.Assert(tatamiGridInfo[xi, yi] == null, "重なっている畳があるぞ");
+                        tatamiGridInfo[xi, yi] = tatamiClone;
+                    }
                 }
+            } else {
+                var obstacleClone = Instantiate(goObstacle) as GameObject;
+                TatamiObject.PlaceObject(obstacleClone, this.transform, x, y, w, h);
+                obstacleClone.transform.localScale = new Vector3(w, 1f, h);
             }
         }
         mainCamera.transform.position = new Vector3(max_x / 2, 10, -max_y * 2);
