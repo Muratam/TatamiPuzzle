@@ -38,6 +38,7 @@ public class TatamiManager : MonoBehaviour {
     [SerializeField] Text moveText;
     [SerializeField] SmoothUIAppearer clearText;
     [SerializeField] Fade fade;
+    [SerializeField] GameObject goFusumaOriginal;
 
     TatamiObject[,] tatamiGridInfo;
     List<TatamiObject> tatamiObjects;
@@ -187,9 +188,29 @@ public class TatamiManager : MonoBehaviour {
                 obstacleClone.transform.localScale = new Vector3(w, 1f, h);
             }
         }
-        mainCamera.transform.position = new Vector3(max_x / 2, 10, -max_y * 2);
+        PlaceFusuma(max_x, max_y);
+        mainCamera.transform.position = new Vector3(max_x / 2 - 0.5f, 10, -max_y / 2 - 4.5f);
+        mainCamera.fieldOfView = 4.8f * Mathf.Max(max_x, max_y * Screen.width / Screen.height);
     }
 
+    void PlaceFusuma(int w, int h) {
+        foreach(var x in Enumerable.Range(0,w)) {
+            var copy = Instantiate(goFusumaOriginal) as GameObject;
+            copy.transform.position = new Vector3(x, 1.1f, 0.6f);
+            copy.transform.parent = this.transform;
+        }
+        foreach(var y in Enumerable.Range(0,h)) {
+            var copy = Instantiate(goFusumaOriginal) as GameObject;
+            copy.transform.position = new Vector3(-0.6f, 1.1f, -y);
+            copy.transform.rotation = Quaternion.Euler(0, -90f, 0);
+            copy.transform.parent = this.transform;
+            var copy2 = Instantiate(goFusumaOriginal) as GameObject;
+            copy2.transform.position = new Vector3((w - 1) + 0.6f, 1.1f, -y);
+            copy2.transform.rotation = Quaternion.Euler(0, 90f, 0);
+            copy2.transform.parent = this.transform;
+        }
+
+    }
 
 
 }
