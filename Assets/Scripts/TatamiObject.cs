@@ -20,9 +20,13 @@ public class TatamiObject : MonoBehaviour {
     }
 
     void Animate() {
-        rotationTime -= Time.deltaTime;
-        if(rotationTime < 0f)
-            rotationTime = 0f;
+        if(rotationTime <= 0f)
+            return;
+        if(rotationTime - Time.deltaTime < 0) {
+            rotationTime = 0f;        
+        } else {
+            rotationTime -= Time.deltaTime;
+        }
         var rotVal = 180f * (1f - rotationTime / maxRotationTime);
         if(rotationDirection.x != 0) {
             transform.localRotation = Quaternion.Euler(0, 0, -rotVal * Mathf.Sign(rotationDirection.x));
@@ -46,7 +50,7 @@ public class TatamiObject : MonoBehaviour {
 
     public void Place(Transform parent, int x, int y, int w, int h, int c) {
         transform.SetParent(parent);
-        transform.position = new Vector3(x + w / 2f - 0.5f, 0, y + h / 2f - 0.5f);
+        transform.position = new Vector3(x + w / 2f - 0.5f, 0, -1f * (y + h / 2f - 0.5f));
         transform.localScale = new Vector3(w, 0.3f, h) * 0.98f;
         ChangeColor(c);
     }
@@ -64,7 +68,7 @@ public class TatamiObject : MonoBehaviour {
             new Color(1, 1, 1),
         };*/
         //return colors[i % colors.Count];
-        float val = 1f - (float)i / 3f;
+        float val = 1f - (float)i / 2f;
         return new Color(val, val, val);
     }
 
