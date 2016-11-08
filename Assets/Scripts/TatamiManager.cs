@@ -191,8 +191,9 @@ public class TatamiManager : MonoBehaviour {
             }
         }
         PlaceFusuma(max_x, max_y);
+        var distance = Mathf.Max(max_x, max_y * Screen.width / Screen.height);
         mainCamera.transform.position = new Vector3(max_x / 2 - 0.5f, 10, -max_y / 2 - 4.5f)
-        + new Vector3(0, Mathf.Sin(Mathf.Deg2Rad * 60f), -Mathf.Cos(Mathf.Deg2Rad * 60f)) * 1.45f * Mathf.Max(max_x, max_y * Screen.width / Screen.height);
+        + new Vector3(0, Mathf.Sin(Mathf.Deg2Rad * 60f), -Mathf.Cos(Mathf.Deg2Rad * 60f)) * 1.45f * Mathf.Pow(distance, 1.3f) / 3;
     }
 
     void PlaceFusuma(int w, int h) {
