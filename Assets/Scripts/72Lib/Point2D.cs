@@ -17,6 +17,10 @@
         return new Point2D(p1.x + p2.x, p1.y + p2.y);
     }
 
+    public static Point2D operator-(Point2D p1, Point2D p2) {
+        return new Point2D(p1.x - p2.x, p1.y - p2.y);
+    }
+
     public static bool operator==(Point2D p1, Point2D p2) {
         return p1.x == p2.x && p1.y == p2.y;
     }

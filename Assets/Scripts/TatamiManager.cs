@@ -32,6 +32,7 @@ using UnityEngine.SceneManagement;
 public class TatamiManager : MonoBehaviour {
     
     [SerializeField] TatamiObject tatamiOriginal;
+    [SerializeField] Camera skyboxCamera;
     [SerializeField] GameObject goObstacle;
     [SerializeField] Player player;
     [SerializeField] Camera mainCamera;
@@ -71,6 +72,7 @@ public class TatamiManager : MonoBehaviour {
     }
 
     void Update() {
+        skyboxCamera.transform.Rotate(0, 0, 0.02f);
         if(cleared)
             return;                    
         if(Input.GetKeyDown(KeyCode.X)) {
@@ -98,7 +100,7 @@ public class TatamiManager : MonoBehaviour {
             deltaPos = new Point2D(); 
             if(Input.GetMouseButtonDown(0)) {
                 RaycastHit hit;
-                if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100)) {
+                if(Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 1000)) {
                     var tatami = hit.collider.GetComponent<TatamiObject>();
                     if(tatami == null)
                         return;
@@ -189,24 +191,31 @@ public class TatamiManager : MonoBehaviour {
             }
         }
         PlaceFusuma(max_x, max_y);
-        mainCamera.transform.position = new Vector3(max_x / 2 - 0.5f, 10, -max_y / 2 - 4.5f);
-        mainCamera.fieldOfView = 4.8f * Mathf.Max(max_x, max_y * Screen.width / Screen.height);
+        mainCamera.transform.position = new Vector3(max_x / 2 - 0.5f, 10, -max_y / 2 - 4.5f)
+        + new Vector3(0, Mathf.Sin(Mathf.Deg2Rad * 60f), -Mathf.Cos(Mathf.Deg2Rad * 60f)) * 1.45f * Mathf.Max(max_x, max_y * Screen.width / Screen.height);
     }
 
     void PlaceFusuma(int w, int h) {
+        var originalScale = goFusumaOriginal.transform.localScale;
+
         foreach(var x in Enumerable.Range(0,w)) {
             var copy = Instantiate(goFusumaOriginal) as GameObject;
             copy.transform.position = new Vector3(x, 1.1f, 0.6f);
+            originalScale.z = 3f + Mathf.Abs(10 * Mathf.Sin(x + Time.time));
+            copy.transform.localScale = originalScale;
             copy.transform.parent = this.transform;
         }
         foreach(var y in Enumerable.Range(0,h)) {
+            originalScale.z = 3f + Mathf.Abs(10 * Mathf.Sin(y + Time.time));
             var copy = Instantiate(goFusumaOriginal) as GameObject;
             copy.transform.position = new Vector3(-0.6f, 1.1f, -y);
             copy.transform.rotation = Quaternion.Euler(0, -90f, 0);
+            copy.transform.localScale = originalScale;
             copy.transform.parent = this.transform;
             var copy2 = Instantiate(goFusumaOriginal) as GameObject;
             copy2.transform.position = new Vector3((w - 1) + 0.6f, 1.1f, -y);
             copy2.transform.rotation = Quaternion.Euler(0, 90f, 0);
+            copy2.transform.localScale = originalScale;
             copy2.transform.parent = this.transform;
         }
 

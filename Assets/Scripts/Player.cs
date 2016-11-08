@@ -14,8 +14,10 @@ public class Player : MonoBehaviour {
     }
 
     public void Move(Point2D pos) {
+        var delta = pos - this.Pos;
         this.Pos = pos;
         transform.position = new Vector3(pos.x, 1, -pos.y);
+        transform.localRotation = Quaternion.Euler(0, 90 * delta.x, 0);
     }
 
 }
