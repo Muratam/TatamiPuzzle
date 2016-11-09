@@ -26,7 +26,7 @@ public static class TatamiUtil {
 
     [ObsoleteAttribute("Use ReadCharaType")]
     public static List<List<int>> ReadRectType(string text) {
-        var varslist = text.Trim().Split('\n')
+        var varslist = text.Trim().Replace("\r\n", "\n").Split('\n')
             .Select(line => line.Split(' ').Select(_ => int.Parse(_)).ToList()).ToList();
         foreach(var vars in varslist) {
             int x = vars[0], y = vars[1], w = vars[2], h = vars[3], c = vars[4];
@@ -41,7 +41,7 @@ public static class TatamiUtil {
     public static List<List<int>> ReadCharaType(string text) {
         //「0 1 x 半角空白」以外の文字は区切り文字として扱うので好きにしてよいです
         //各長方形の左上のみしか見ない
-        var lines = text.Trim().Split('\n');
+        var lines = text.Trim().Replace("\r\n", "\n").Split('\n');
         int max_x = lines.Select(_ => (_.Length + 1) / 2).Max();
         int max_y = (lines.Length + 1) / 2;
         var varslist = new List<List<int>>();
