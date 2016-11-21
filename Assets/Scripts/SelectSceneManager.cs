@@ -13,7 +13,11 @@ public class SelectSceneManager : MonoBehaviour {
     int preMouseReacted = 0;
     bool goingToScene = false;
 
-    void Start() {
+    void Awake() {
+        PlayingData.ReadAll();
+    }
+
+    void Start() {        
         MakeUI();  
         UpdateExplanations();
     }

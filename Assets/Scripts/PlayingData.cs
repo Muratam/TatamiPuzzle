@@ -51,20 +51,21 @@ public static class PlayingData {
 
     public readonly static List<StageData> StageDatas = new List<StageData>();
 
-
-    static PlayingData() {        
+    public static void ReadAll() {
         Action<string> ConstructDatas = (text) => {
-            var lines = text.Split('\n');
+            var lines = text.Replace("\r\n", "\n").Split('\n');
             var data = lines.TakeWhile(_ => !_.StartsWith("#")).Aggregate((a, b) => a + "\n" + b);
             var name = lines.SkipWhile(_ => !_.StartsWith("#")).ElementAt(1);
             var explanation = lines.SkipWhile(_ => !_.StartsWith("#")).Skip(2).Aggregate((a, b) => a + "\n" + b);
             StageDatas.Add(new StageData(name, explanation, data));
         };
-        var folder = "./TatamiStageData/";
+        var folder = "TatamiStageData/";
         var extention = "txt";
         Func<string,int> filename2Index = 
             (_) => int.Parse(_.Replace(folder, "").Replace("." + extention, ""));
-        if(Directory.Exists(folder)) { // try to read from folder            
+        StageDatas.Clear();
+        if(Directory.Exists(folder)) { // try to read from folder 
+            folder = "./" + folder;
             var files = Directory.GetFiles(folder).Where(_ => new Regex(folder + @"\d+\." + extention + "$").Match(_).Success).ToArray();
             Array.Sort(files, (a, b) => filename2Index(a) - filename2Index(b));
             foreach(var f in files) {
@@ -73,12 +74,17 @@ public static class PlayingData {
                 }
             }
         } else { // try to read from Resources (For Android etc..)  
+            Debug.Log("From Resources");
             var textObjects = Resources.LoadAll(folder);
             Array.Sort(textObjects, (a, b) => filename2Index(a.name) - filename2Index(b.name));
             foreach(var to in textObjects) {
                 var ta = to as TextAsset;
                 ConstructDatas(ta.text);
             }
-        }
+        }           
+    }
+
+    static PlayingData() {        
+        ReadAll();
     }
 }

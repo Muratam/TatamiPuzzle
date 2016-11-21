@@ -17,7 +17,8 @@ public class Player : MonoBehaviour {
         var delta = pos - this.Pos;
         this.Pos = pos;
         transform.position = new Vector3(pos.x, 1, -pos.y);
-        transform.localRotation = Quaternion.Euler(0, 90 * delta.x, 0);
+        Debug.Log(-Mathf.Rad2Deg * Mathf.Atan2(delta.x, delta.y));
+        transform.localRotation = Quaternion.Euler(0, -Mathf.Rad2Deg * Mathf.Atan2(delta.x, delta.y), 0);
     }
 
 }

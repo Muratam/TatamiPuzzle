@@ -155,8 +155,10 @@ public class TatamiManager : MonoBehaviour {
         moveTime = 0;
         player.Move(new Point2D(0, 0));
         moveText.text = "" + TatamiUtil.Int2Japanese(moveTime);
-        foreach(var child in GetComponentsInChildren<TatamiObject>()) {
-            Destroy(child.gameObject);
+        foreach(var child in GetComponentsInChildren<Transform>()) {
+            if(child != this.transform) {
+                Destroy(child.gameObject);
+            }                
         }
     }
 
